@@ -86,7 +86,7 @@ def document_to_questions(sessionID, subjectID, documentID,client):
     
     except Exception as e:
         print(f"General error: {str(e)}")
-
+        return [] 
     # Wenn keine "ping"-Anfrage, gebe eine JSON-Antwort zurück
 
     
@@ -112,6 +112,11 @@ def main ():
         subjectID = job["subjectID"]
         documentID = job["databucketID"]
         questionList = document_to_questions(sessionID, subjectID, documentID, client)
+
+        if not questionList:
+            print(f"Keine Fragen generiert für Job {job['$id']}, Job wird übersprungen.")
+            continue
+
         # 3. Success delete Job
         databases = Databases(client)
         databases.delete_document("67c50ecf001b7baf5de3", "681dd825000e6990368a", job["$id"])
